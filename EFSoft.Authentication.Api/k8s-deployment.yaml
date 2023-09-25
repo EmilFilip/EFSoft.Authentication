@@ -1,0 +1,51 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: svc-efsoft-services-authenticationapi
+  labels:
+    version: dev
+    product: efsoft-services-authenticationapi
+spec:
+  selector:
+    app: efsoft-services-authenticationapi
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dep-efsoft-services-authenticationapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: efsoft-services-authenticationapi
+  template:
+    metadata:
+      labels:
+        app: efsoft-services-authenticationapi
+    spec:
+      containers:
+      - name: efsoft-services-authenticationapi
+        image: efsoftcr.azurecr.io/efsoft_authentication:v5
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Production
+        - name: ASPNETCORE_URLS
+          value: http://+:80
+        - name: ConnectionStrings__AuthenticationConnectionString
+          valueFrom: 
+            secretKeyRef:
+              name: authentication-db
+              key: AuthenticationConnectionString
+        ports:
+        - containerPort: 80
+        - containerPort: 443

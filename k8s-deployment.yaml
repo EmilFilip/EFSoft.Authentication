@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
       - name: efsoft-services-authenticationapi
-        image: efsoft.azurecr.io/efsoft_authentication:v5
+        image: efsoft.azurecr.io/efsoft-authentication
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: Production

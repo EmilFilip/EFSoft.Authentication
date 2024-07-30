@@ -31,7 +31,7 @@ public class JwtAuthenticationManager : IJwtAuthenticationManager
 
         var signingCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(tokenKey),
-                SecurityAlgorithms.HmacSha512Signature);
+                SecurityAlgorithms.HmacSha256Signature);
 
         var jwt = new JwtSecurityToken(
             claims: claims,

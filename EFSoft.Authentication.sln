@@ -9,8 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
 		azure-pipelines.yml = azure-pipelines.yml
+		azure-pipelines-k8s.yaml = azure-pipelines-k8s.yaml
 		Dockerfile = Dockerfile
-		k8s-deployment.yaml = k8s-deployment.yaml
 		NuGet.Config = NuGet.Config
 	EndProjectSection
 EndProject

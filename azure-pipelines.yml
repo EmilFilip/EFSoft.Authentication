@@ -1,6 +1,7 @@
-# Docker
-# Build a Docker image
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
 - master
@@ -8,44 +9,83 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-resources:
-- repo: self
-
 variables:
-  tag: '$(Build.BuildId)'
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
 
-stages:
-- stage: Build
-  displayName: Build and Push image
-  jobs:
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-    - task: Docker@2
-      displayName: 'Build Docker image'
-      inputs:
-        containerRegistry: 'efsoft'
-        command: 'build'
-        repository: 'efsoft-authentication'
-        dockerfile: '**/Dockerfile'
-        arguments: '--build-arg NUGET_PASSWORD=$(PAT)'
-        tags: latest
-    - task: Docker@2
-      displayName: 'Push Docker image'
-      inputs:
-        containerRegistry: 'efsoft'
-        repository: 'efsoft-authentication'
-        command: 'push'
-        tags: latest
-    - task: CopyFiles@2
-      inputs:
-        SourceFolder: '$(agent.builddirectory)'
-        Contents: $(agent.builddirectory)/**/k8s-deployment.yaml
-        TargetFolder: '$(build.artifactstagingdirectory)'
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop'
-        publishLocation: 'Container'
+steps:
+#- checkout: self
+#- task: DotNetCoreCLI@2
+# displayName: New Manifest for tool
+# inputs:
+#   command: custom
+#   custom: 'new '
+#   arguments: tool-manifest
+    
+- task: UseDotNet@2
+  displayName: 'Use .NET 8 SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.0.x'
+    includePreviewVersions: true
+
+- task: NuGetToolInstaller@1
+  displayName: 'Install NuGet Tool'
+  inputs:
+    versionSpec: '6.x.x'
+    checkLatest: true
+
+- task: NuGetCommand@2
+  displayName: 'Restore NuGet Packages'
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    vstsFeed: 'b461ee19-0e11-4e29-a84b-881602ea8e3e'
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'Build $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run unit tests'
+  inputs:
+    command: 'test'
+    arguments: --no-restore --configuration $(buildConfiguration) 
+    publishTestResults: false
+    projects: '**/*.UnitTests.csproj'
+    testRunTitle: 'Unit-Test-Run-$(Build.BuildId)'
+
+#- task: DotNetCoreCLI@2
+#  displayName: Install EF Tool
+#  inputs:
+#    command: custom
+#    custom: 'tool '
+#    arguments: install dotnet-ef
+
+#- task: DotNetCoreCLI@2
+#  displayName: Create SQL Scripts
+#  inputs:
+#    command: custom
+#    custom: 'ef '
+#    arguments: migrations script --output $(Build.SourcesDirectory)/SQL/tododbscript.sql --idempotent --project $(Build.SourcesDirectory)/src/EFSoft.Customers.Infrastructure.csproj --context CustomersDbContext
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish'
+  inputs:
+    command: publish
+    arguments: '--no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    projects: '**/*.csproj'
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish Artifacts'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifact: 'BuildOutput'
+    publishLocation: 'pipeline'
+
+#- task: PublishBuildArtifacts@1
+#  displayName: 'Publish Artifact: SQLScripts'
+#  inputs:
+#    PathtoPublish: $(Build.SourcesDirectory)/SQL/tododbscript.sql
+#    ArtifactName: SQLScripts

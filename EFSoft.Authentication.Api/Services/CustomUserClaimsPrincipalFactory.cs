@@ -1,5 +1,5 @@
 ﻿// EFSoft.Authentication.Api/Services/CustomUserClaimsPrincipalFactory.cs
-using EFSoft.Authentication.Api.Database;
+using EFSoft.Authentication.Api.Enitites;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -11,16 +11,16 @@ namespace EFSoft.Authentication.Api.Services;
 
 // Inherit from UserClaimsPrincipalFactory<TUser, TRole> if you use Roles,
 // otherwise UserClaimsPrincipalFactory<TUser> is fine.
-public class CustomUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<User>
+public class CustomUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser>
 {
     public CustomUserClaimsPrincipalFactory(
-        UserManager<User> userManager,
+        UserManager<ApplicationUser> userManager,
         IOptions<IdentityOptions> optionsAccessor)
         : base(userManager, optionsAccessor)
     {
     }
 
-    protected override async Task<ClaimsIdentity> GenerateClaimsAsync(User user)
+    protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ApplicationUser user)
     {
         // Generate the base claims first (like sub, username, email etc.)
         var identity = await base.GenerateClaimsAsync(user);

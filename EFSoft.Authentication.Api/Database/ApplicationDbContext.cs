@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using EFSoft.Authentication.Api.Enitites;
+
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFSoft.Authentication.Api.Database;
 
-public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<User>(options)
+public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<ApplicationUser>(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     { 
     base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<User>().Property(u => u.Initials).HasMaxLength(5);
         modelBuilder.HasDefaultSchema("Identity");
     }
 }

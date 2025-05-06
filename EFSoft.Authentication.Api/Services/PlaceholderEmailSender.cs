@@ -1,7 +1,4 @@
-﻿
-using System.Diagnostics;
-
-namespace EFSoft.Authentication.Api.Services;
+﻿namespace EFSoft.Authentication.Api.Services;
 
 public class PlaceholderEmailSender : IEmailSender
 {

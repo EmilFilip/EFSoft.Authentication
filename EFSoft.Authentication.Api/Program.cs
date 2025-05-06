@@ -1,17 +1,3 @@
-using System.Text;
-
-using EFSoft.Authentication.Api.Models;
-using EFSoft.Authentication.Api.Services;
-
-using EFSoft.Authentication.Api.Database;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using EFSoft.Authentication.Api.Enitites;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // --- Configuration ---
@@ -114,6 +100,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.ApplyMigrations();
 
 // Redirect HTTP requests to HTTPS
 app.UseHttpsRedirection();

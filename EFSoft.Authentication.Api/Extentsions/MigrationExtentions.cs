@@ -1,7 +1,4 @@
-﻿using EFSoft.Authentication.Api.Database;
-using Microsoft.EntityFrameworkCore;
-
-namespace EFSoft.Authentication.Api.Extentsions;
+﻿namespace EFSoft.Authentication.Api.Extentsions;
 
 public static class MigrationExtentions
 {

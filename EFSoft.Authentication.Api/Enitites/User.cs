@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace EFSoft.Authentication.Api.Enitites;
+﻿namespace EFSoft.Authentication.Api.Enitites;
 
 // Extend IdentityUser to add custom properties
 public class ApplicationUser : IdentityUser

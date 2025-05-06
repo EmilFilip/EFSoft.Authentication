@@ -1,14 +1,5 @@
 ﻿namespace EFSoft.Authentication.Api.Controllers;
 
-using System.Web; // Needed for HttpUtility.UrlDecode
-
-using EFSoft.Authentication.Api.Enitites;
-using EFSoft.Authentication.Api.Models;
-using EFSoft.Authentication.Api.Services;
-
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-
 [ApiController]
 [Route("api/[controller]")] // Base path will be /api/auth
 public class AuthController : ControllerBase

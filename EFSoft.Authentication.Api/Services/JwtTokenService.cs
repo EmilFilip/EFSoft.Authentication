@@ -1,13 +1,4 @@
-﻿using EFSoft.Authentication.Api.Enitites;
-using EFSoft.Authentication.Api.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
-
-namespace EFSoft.Authentication.Api.Services;
+﻿namespace EFSoft.Authentication.Api.Services;
 
 public class JwtTokenService
 {

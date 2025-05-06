@@ -1,9 +1,4 @@
-﻿using EFSoft.Authentication.Api.Enitites;
-
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-
-namespace EFSoft.Authentication.Api.Database;
+﻿namespace EFSoft.Authentication.Api.Database;
 
 public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<ApplicationUser>(options)
 {

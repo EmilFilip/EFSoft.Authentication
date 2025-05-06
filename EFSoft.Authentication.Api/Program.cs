@@ -63,8 +63,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
 })
-    .AddEntityFrameworkStores<ApplicationDbContext>() // Configures Identity to use EF Core
-    .AddDefaultTokenProviders(); // Adds token providers for password reset, email confirmation, etc.
+.AddEntityFrameworkStores<ApplicationDbContext>() // Configures Identity to use EF Core
+.AddDefaultTokenProviders(); // Adds token providers for password reset, email confirmation, etc.
 
 // Add JWT Authentication
 builder.Services.AddAuthentication(options =>

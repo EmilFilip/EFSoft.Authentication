@@ -1,7 +1,6 @@
-# ASP.NET Core (.NET Framework)
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+# .NET 8 CI Pipeline
+# Builds, tests, and publishes .NET 8 projects using Azure Pipelines.
+# Compatible with Ubuntu 24.04+ (no Mono required)
 
 trigger:
 - master
@@ -10,82 +9,56 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
 steps:
-#- checkout: self
-#- task: DotNetCoreCLI@2
-# displayName: New Manifest for tool
-# inputs:
-#   command: custom
-#   custom: 'new '
-#   arguments: tool-manifest
-    
+# Use the latest .NET 8 SDK
 - task: UseDotNet@2
   displayName: 'Use .NET 8 SDK'
   inputs:
     packageType: 'sdk'
     version: '8.0.x'
-    includePreviewVersions: true
+    includePreviewVersions: false
 
-- task: NuGetToolInstaller@1
-  displayName: 'Install NuGet Tool'
-  inputs:
-    versionSpec: '6.x.x'
-    checkLatest: true
-
-- task: NuGetCommand@2
+# Restore dependencies from Azure Artifacts
+- task: DotNetCoreCLI@2
   displayName: 'Restore NuGet Packages'
   inputs:
     command: 'restore'
-    restoreSolution: '**/*.sln'
+    projects: '**/*.sln'
     feedsToUse: 'select'
-    vstsFeed: 'b461ee19-0e11-4e29-a84b-881602ea8e3e'
+    vstsFeed: 'emilfilip3'   # Replace with your actual feed name or ID
 
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'Build $(buildConfiguration)'
-
+# Build solution
 - task: DotNetCoreCLI@2
-  displayName: 'Run unit tests'
+  displayName: 'Build Solution'
+  inputs:
+    command: 'build'
+    projects: '**/*.sln'
+    arguments: '--configuration $(buildConfiguration) --no-restore'
+
+# Run unit tests
+- task: DotNetCoreCLI@2
+  displayName: 'Run Unit Tests'
   inputs:
     command: 'test'
-    arguments: --no-restore --configuration $(buildConfiguration) 
-    publishTestResults: false
     projects: '**/*.UnitTests.csproj'
+    arguments: '--configuration $(buildConfiguration) --no-restore'
+    publishTestResults: true
     testRunTitle: 'Unit-Test-Run-$(Build.BuildId)'
 
-#- task: DotNetCoreCLI@2
-#  displayName: Install EF Tool
-#  inputs:
-#    command: custom
-#    custom: 'tool '
-#    arguments: install dotnet-ef
-
-#- task: DotNetCoreCLI@2
-#  displayName: Create SQL Scripts
-#  inputs:
-#    command: custom
-#    custom: 'ef '
-#    arguments: migrations script --output $(Build.SourcesDirectory)/SQL/tododbscript.sql --idempotent --project $(Build.SourcesDirectory)/src/EFSoft.Customers.Infrastructure.csproj --context CustomersDbContext
-
+# Publish artifacts
 - task: DotNetCoreCLI@2
-  displayName: 'Publish'
+  displayName: 'Publish Project(s)'
   inputs:
-    command: publish
-    arguments: '--no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    command: 'publish'
     projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --no-restore --output $(Build.ArtifactStagingDirectory)'
 
+# Publish to pipeline artifacts
 - task: PublishPipelineArtifact@1
   displayName: 'Publish Artifacts'
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)'
     artifact: 'BuildOutput'
     publishLocation: 'pipeline'
-
-#- task: PublishBuildArtifacts@1
-#  displayName: 'Publish Artifact: SQLScripts'
-#  inputs:
-#    PathtoPublish: $(Build.SourcesDirectory)/SQL/tododbscript.sql
-#    ArtifactName: SQLScripts
